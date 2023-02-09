@@ -1,0 +1,37 @@
+import sqlite3
+mylist = ["I", 9, "learn", "Python", 42, 1]
+
+con = sqlite3.connect('homework.db')
+cursor = con.cursor()
+cursor.execute('''CREATE TABLE IF NOT EXISTS tab_1(id INTEGER PRIMARY KEY AUTOINCREMENT, col_1 TEXT)''')
+cursor.execute('''CREATE TABLE IF NOT EXISTS tab_2(id INTEGER PRIMARY KEY AUTOINCREMENT, col_1 INTEGER)''')
+for i in mylist:
+    if isinstance(i, str):
+        cursor.execute('''INSERT INTO tab_1(col_1) VALUES (?)''', (i,))
+        cursor.execute('''INSERT INTO tab_2(col_1) VALUES (?)''', (len(i),))
+
+    elif isinstance(i, int):
+        if i % 2 == 0:
+            cursor.execute('''INSERT INTO tab_2(col_1) VALUES (?)''', (i,))
+        else:
+            cursor.execute('''INSERT INTO tab_1(col_1) VALUES (?)''', ("odd number",))
+
+con.commit()
+cursor.execute('''SELECT col_1 FROM tab_1''')
+tab_1 = cursor.fetchall()
+#print(tab_1)
+cursor.execute('''SELECT col_1 FROM tab_2''')
+tab_2 = cursor.fetchall()
+#print(tab_2)
+
+cursor.execute("SELECT * FROM tab_1")
+counter = (len(cursor.fetchall()))
+#print(counter)
+if counter > 5:
+    cursor.execute('''DELETE FROM tab_1 WHERE id = 1''')
+    con.commit()
+if counter < 5:
+    cursor.execute('''UPDATE tab_1 SET col_1 = 'hello' WHERE id = 11''')
+    con.commit()
+print(tab_1)
+print(tab_2)
